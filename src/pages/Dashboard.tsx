@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import EmployeeList from "@/components/EmployeeList";
@@ -123,6 +124,17 @@ const Dashboard = () => {
     fetchEmployees();
   };
 
+  // Calculate stats
+  const totalEmployees = employees.length;
+  const recentHires = employees.filter(emp => {
+    const hireDate = emp.hire_date ? new Date(emp.hire_date) : null;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return hireDate && hireDate >= thirtyDaysAgo;
+  }).length;
+  const departments = new Set(employees.map(emp => emp.department).filter(Boolean)).size;
+  const positions = new Set(employees.map(emp => emp.position).filter(Boolean)).size;
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -143,17 +155,68 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Employees</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <p className="text-muted-foreground">
-              Manage your team members and their information
+              Overview of your workforce and key metrics
             </p>
           </div>
           <Button onClick={handleCreateNew} className="hover-scale">
             <Plus className="mr-2 h-4 w-4" />
             Add Employee
           </Button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
+          <Card className="hover-scale">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalEmployees}</div>
+              <p className="text-xs text-muted-foreground">Active team members</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover-scale">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Recent Hires</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{recentHires}</div>
+              <p className="text-xs text-muted-foreground">Last 30 days</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover-scale">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Departments</CardTitle>
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{departments}</div>
+              <p className="text-xs text-muted-foreground">Active departments</p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover-scale">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Positions</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{positions}</div>
+              <p className="text-xs text-muted-foreground">Unique roles</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mb-4">
+          <h3 className="text-2xl font-bold tracking-tight">Employee Directory</h3>
         </div>
 
         {employees.length === 0 ? (
