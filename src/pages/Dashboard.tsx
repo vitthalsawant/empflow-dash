@@ -220,8 +220,17 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-2xl font-bold tracking-tight">Employee Directory</h3>
+        <div className="mb-4 flex justify-between items-center">
+          <div>
+            <h3 className="text-2xl font-bold tracking-tight">Employee Directory</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage your team members - add, edit, or remove employees
+            </p>
+          </div>
+          <Button onClick={handleCreateNew} variant="outline" className="hover-scale">
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Employee
+          </Button>
         </div>
 
         {employees.length === 0 ? (
