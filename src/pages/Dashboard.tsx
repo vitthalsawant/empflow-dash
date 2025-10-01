@@ -92,6 +92,11 @@ const Dashboard = () => {
   };
 
   const handleEdit = (employee: Employee) => {
+    if (!employee.id) {
+      // Inline edit triggered refresh
+      fetchEmployees();
+      return;
+    }
     setSelectedEmployee(employee);
     setDialogOpen(true);
   };
