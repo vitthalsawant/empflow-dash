@@ -113,18 +113,18 @@ const Intro = () => {
                   </div>
                 </div>
                 
-                {/* Mock chart */}
+                {/* Mock chart with animations */}
                 <div className="bg-card/80 backdrop-blur-sm rounded-lg p-4 border shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-medium">Department Overview</span>
                     <BarChart3 className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div className="flex items-end justify-between h-32 gap-2">
-                    <div className="bg-primary/30 rounded-t w-full" style={{ height: '60%' }}></div>
-                    <div className="bg-primary/50 rounded-t w-full" style={{ height: '85%' }}></div>
-                    <div className="bg-primary/40 rounded-t w-full" style={{ height: '70%' }}></div>
-                    <div className="bg-primary/60 rounded-t w-full" style={{ height: '95%' }}></div>
-                    <div className="bg-primary/35 rounded-t w-full" style={{ height: '55%' }}></div>
+                    <div className="bg-primary/30 rounded-t w-full animate-[pulse_3s_ease-in-out_infinite]" style={{ height: '60%', animationDelay: '0s' }}></div>
+                    <div className="bg-primary/50 rounded-t w-full animate-[pulse_3s_ease-in-out_infinite]" style={{ height: '85%', animationDelay: '0.2s' }}></div>
+                    <div className="bg-primary/40 rounded-t w-full animate-[pulse_3s_ease-in-out_infinite]" style={{ height: '70%', animationDelay: '0.4s' }}></div>
+                    <div className="bg-primary/60 rounded-t w-full animate-[pulse_3s_ease-in-out_infinite]" style={{ height: '95%', animationDelay: '0.6s' }}></div>
+                    <div className="bg-primary/35 rounded-t w-full animate-[pulse_3s_ease-in-out_infinite]" style={{ height: '55%', animationDelay: '0.8s' }}></div>
                   </div>
                 </div>
 

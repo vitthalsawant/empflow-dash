@@ -90,10 +90,31 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
-      <Card className="w-full max-w-md animate-scale-in">
-        <CardHeader>
-          <CardTitle>{isLogin ? "Welcome Back" : "Create Account"}</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-[pulse_4s_ease-in-out_infinite]"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-[pulse_5s_ease-in-out_infinite]" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      {/* Floating profile avatars */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 animate-[bounce_3s_ease-in-out_infinite] shadow-lg"></div>
+        <div className="absolute top-1/3 right-1/4 w-16 h-16 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/40 animate-[bounce_4s_ease-in-out_infinite] shadow-lg" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-10 h-10 rounded-full bg-gradient-to-br from-accent/20 to-accent/40 animate-[bounce_3.5s_ease-in-out_infinite] shadow-lg" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-14 h-14 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 animate-[bounce_4.5s_ease-in-out_infinite] shadow-lg" style={{ animationDelay: '1.5s' }}></div>
+      </div>
+
+      <Card className="w-full max-w-md animate-scale-in relative z-10 shadow-2xl">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center animate-[pulse_2s_ease-in-out_infinite] shadow-lg">
+            <div className="w-16 h-16 rounded-full bg-background/90 flex items-center justify-center">
+              <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+          <CardTitle className="text-2xl">{isLogin ? "Welcome Back" : "Create Account"}</CardTitle>
           <CardDescription>
             {isLogin
               ? "Enter your credentials to access your dashboard"
