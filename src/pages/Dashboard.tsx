@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import EmployeeList from "@/components/EmployeeList";
 import EmployeeDialog from "@/components/EmployeeDialog";
+import EmployeeAnalytics from "@/components/EmployeeAnalytics";
 
 export interface Employee {
   id: string;
@@ -220,31 +222,58 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-2xl font-bold tracking-tight">Employee Directory</h3>
-        </div>
+        <Tabs defaultValue="directory" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="directory" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Employee Directory
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Visual Analytics
+            </TabsTrigger>
+          </TabsList>
 
-        {employees.length === 0 ? (
-          <div className="text-center py-16 animate-fade-in">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Plus className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">No employees yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Get started by creating your first employee record
-            </p>
-            <Button onClick={handleCreateNew}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Your First Employee
-            </Button>
-          </div>
-        ) : (
-          <EmployeeList
-            employees={employees}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
+          <TabsContent value="directory" className="mt-6">
+            {employees.length === 0 ? (
+              <div className="text-center py-16 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Plus className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No employees yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Get started by creating your first employee record
+                </p>
+                <Button onClick={handleCreateNew}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Your First Employee
+                </Button>
+              </div>
+            ) : (
+              <EmployeeList
+                employees={employees}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            {employees.length === 0 ? (
+              <div className="text-center py-16 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <BarChart3 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No data available</h3>
+                <p className="text-muted-foreground mb-4">
+                  Add employees to see visual analytics
+                </p>
+              </div>
+            ) : (
+              <EmployeeAnalytics employees={employees} />
+            )}
+          </TabsContent>
+        </Tabs>
 
         <EmployeeDialog
           open={dialogOpen}

@@ -3,9 +3,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Employee } from "@/pages/Dashboard";
+
+const DEPARTMENTS = ["Engineering", "Sales", "Marketing", "HR", "Finance", "Operations"];
+const POSITIONS = ["Manager", "Senior Developer", "Developer", "Designer", "Analyst", "Coordinator", "Specialist"];
 
 interface EmployeeDialogProps {
   open: boolean;
@@ -156,19 +160,33 @@ const EmployeeDialog = ({ open, onOpenChange, employee, onSave }: EmployeeDialog
             </div>
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => handleChange("department", e.target.value)}
-              />
+              <Select value={formData.department} onValueChange={(value) => handleChange("department", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS.map((dept) => (
+                    <SelectItem key={dept} value={dept}>
+                      {dept}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="position">Position</Label>
-              <Input
-                id="position"
-                value={formData.position}
-                onChange={(e) => handleChange("position", e.target.value)}
-              />
+              <Select value={formData.position} onValueChange={(value) => handleChange("position", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select position" />
+                </SelectTrigger>
+                <SelectContent>
+                  {POSITIONS.map((pos) => (
+                    <SelectItem key={pos} value={pos}>
+                      {pos}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="salary">Salary</Label>
