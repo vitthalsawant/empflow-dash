@@ -261,9 +261,9 @@ src/
 4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
-## 📝 License
+## 📝 Document
 
-This project is built with [Lovable](https://lovable.dev) and is available for personal and commercial use.
+Document https://docs.google.com/document/d/1sj5TuPMzLXmfYWlRzltOnSg3_426rFt7rUWlg84IFeE/edit?usp=sharing
 
 ## 🆘 Support
 
