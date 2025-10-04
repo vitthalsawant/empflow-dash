@@ -164,7 +164,7 @@ const EmployeeList = ({ employees, onEdit, onDelete }: EmployeeListProps) => {
                     className="h-8"
                   />
                 ) : (
-                  employee.salary ? `$${employee.salary.toLocaleString()}` : "-"
+                  employee.salary ? `₹${employee.salary.toLocaleString('en-IN')}` : "-"
                 )}
               </TableCell>
               <TableCell>

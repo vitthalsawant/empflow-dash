@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import EmployeeList from "@/components/EmployeeList";
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -130,6 +132,11 @@ const Dashboard = () => {
     setDialogOpen(false);
     fetchEmployees();
   };
+
+  // Filter employees based on search term
+  const filteredEmployees = employees.filter(emp => 
+    emp.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Calculate stats
   const totalEmployees = employees.length;
@@ -235,6 +242,24 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="directory" className="mt-6">
+            {employees.length > 0 && (
+              <div className="mb-6">
+                <div className="relative max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search employees by name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                {searchTerm && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Found {filteredEmployees.length} employee{filteredEmployees.length !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            )}
             {employees.length === 0 ? (
               <div className="text-center py-16 animate-fade-in">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -249,9 +274,19 @@ const Dashboard = () => {
                   Add Your First Employee
                 </Button>
               </div>
+            ) : filteredEmployees.length === 0 ? (
+              <div className="text-center py-16 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Search className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No employees found</h3>
+                <p className="text-muted-foreground mb-4">
+                  Try adjusting your search term
+                </p>
+              </div>
             ) : (
               <EmployeeList
-                employees={employees}
+                employees={filteredEmployees}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
