@@ -1,6 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Employee } from "@/pages/Dashboard";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from "recharts";
+import { Download } from "lucide-react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { useToast } from "@/hooks/use-toast";
 
 interface EmployeeAnalyticsProps {
   employees: Employee[];
@@ -9,6 +14,49 @@ interface EmployeeAnalyticsProps {
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
+  const { toast } = useToast();
+
+  const handleDownloadPDF = async () => {
+    try {
+      toast({
+        title: "Generating PDF",
+        description: "Please wait while we generate your analytics report...",
+      });
+
+      const element = document.getElementById("analytics-content");
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgWidth = 280;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+      pdf.save(`employee-analytics-${new Date().toISOString().split("T")[0]}.pdf`);
+
+      toast({
+        title: "Success",
+        description: "Analytics report downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    }
+  };
   // Department distribution
   const departmentData = employees.reduce((acc, emp) => {
     const dept = emp.department || "Unassigned";
@@ -70,10 +118,18 @@ const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h3 className="text-2xl font-bold tracking-tight mb-2">Visual Analytics</h3>
-        <p className="text-muted-foreground">Real-time insights from your employee data</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-2xl font-bold tracking-tight mb-2">Visual Analytics</h3>
+          <p className="text-muted-foreground">Real-time insights from your employee data</p>
+        </div>
+        <Button onClick={handleDownloadPDF} variant="outline">
+          <Download className="mr-2 h-4 w-4" />
+          Download PDF
+        </Button>
       </div>
+
+      <div id="analytics-content">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Department Distribution - Pie Chart */}
@@ -156,12 +212,13 @@ const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} />
                 <YAxis />
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => `₹${value.toLocaleString("en-IN")}`} />
                 <Bar dataKey="avgSalary" fill="hsl(var(--chart-2))" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );
