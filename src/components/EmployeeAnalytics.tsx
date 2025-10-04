@@ -155,8 +155,8 @@ const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
               <BarChart data={salaryChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} />
-                <YAxis />
-                <Tooltip formatter={(value) => `₹${value.toLocaleString("en-IN")}`} />
+                <YAxis tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(value) => `₹${Number(value).toLocaleString("en-IN")}`} />
                 <Bar dataKey="avgSalary" fill="hsl(var(--chart-2))" />
               </BarChart>
             </ResponsiveContainer>
