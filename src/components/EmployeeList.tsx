@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash2, Check, X } from "lucide-react";
+import { Edit, Trash2, Check, X, FileSpreadsheet } from "lucide-react";
 import { Employee } from "@/pages/Dashboard";
 import {
   AlertDialog,
@@ -24,14 +24,16 @@ import {
 } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { exportFilteredToExcel } from "@/lib/exportUtils";
 
 interface EmployeeListProps {
   employees: Employee[];
   onEdit: (employee: Employee) => void;
   onDelete: (id: string) => void;
+  searchTerm?: string;
 }
 
-const EmployeeList = ({ employees, onEdit, onDelete }: EmployeeListProps) => {
+const EmployeeList = ({ employees, onEdit, onDelete, searchTerm }: EmployeeListProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Employee>>({});
   const { toast } = useToast();
@@ -82,9 +84,34 @@ const EmployeeList = ({ employees, onEdit, onDelete }: EmployeeListProps) => {
     }
   };
 
+  const handleExportExcel = async () => {
+    try {
+      await exportFilteredToExcel(employees, searchTerm);
+      toast({
+        title: "Success",
+        description: "Employee list exported to Excel successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Export Error",
+        description: error.message || "Failed to export employee list",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <div className="rounded-md border animate-fade-in">
-      <Table>
+    <div className="space-y-4">
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <Button onClick={handleExportExcel} variant="outline" size="sm" disabled={employees.length === 0}>
+          <FileSpreadsheet className="mr-2 h-4 w-4" />
+          Export to Excel
+        </Button>
+      </div>
+      
+      <div className="rounded-md border animate-fade-in">
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
@@ -236,7 +263,8 @@ const EmployeeList = ({ employees, onEdit, onDelete }: EmployeeListProps) => {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
     </div>
   );
 };

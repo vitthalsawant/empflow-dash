@@ -1,6 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Employee } from "@/pages/Dashboard";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from "recharts";
+import { Download } from "lucide-react";
+import { exportToPDF } from "@/lib/exportUtils";
+import { useToast } from "@/hooks/use-toast";
 
 interface EmployeeAnalyticsProps {
   employees: Employee[];
@@ -9,6 +13,23 @@ interface EmployeeAnalyticsProps {
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
+  const { toast } = useToast();
+
+  const handleExportPDF = async () => {
+    try {
+      await exportToPDF('analytics-container', `employee-analytics-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast({
+        title: "Success",
+        description: "Analytics charts exported to PDF successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Export Error",
+        description: error.message || "Failed to export analytics charts",
+        variant: "destructive",
+      });
+    }
+  };
   // Department distribution
   const departmentData = employees.reduce((acc, emp) => {
     const dept = emp.department || "Unassigned";
@@ -70,10 +91,18 @@ const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h3 className="text-2xl font-bold tracking-tight mb-2">Visual Analytics</h3>
-        <p className="text-muted-foreground">Real-time insights from your employee data</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-bold tracking-tight mb-2">Visual Analytics</h3>
+          <p className="text-muted-foreground">Real-time insights from your employee data</p>
+        </div>
+        <Button onClick={handleExportPDF} variant="outline" disabled={employees.length === 0}>
+          <Download className="mr-2 h-4 w-4" />
+          Export Charts to PDF
+        </Button>
       </div>
+
+      <div id="analytics-container" className="space-y-6">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Department Distribution - Pie Chart */}
@@ -162,6 +191,7 @@ const EmployeeAnalytics = ({ employees }: EmployeeAnalyticsProps) => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

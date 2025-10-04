@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3, Search } from "lucide-react";
+import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3, Search, Download, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import EmployeeList from "@/components/EmployeeList";
 import EmployeeDialog from "@/components/EmployeeDialog";
 import EmployeeAnalytics from "@/components/EmployeeAnalytics";
+import { exportToExcel, exportAnalyticsToPDF } from "@/lib/exportUtils";
 
 export interface Employee {
   id: string;
@@ -133,6 +134,38 @@ const Dashboard = () => {
     fetchEmployees();
   };
 
+  const handleExportExcel = async () => {
+    try {
+      await exportToExcel(employees, `employees-${new Date().toISOString().split('T')[0]}.xlsx`);
+      toast({
+        title: "Success",
+        description: "Employee list exported to Excel successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Export Error",
+        description: error.message || "Failed to export employee list",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      await exportAnalyticsToPDF(employees);
+      toast({
+        title: "Success",
+        description: "Analytics report exported to PDF successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Export Error",
+        description: error.message || "Failed to export analytics report",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Filter employees based on search term
   const filteredEmployees = employees.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -176,10 +209,20 @@ const Dashboard = () => {
               Overview of your workforce and key metrics
             </p>
           </div>
-          <Button onClick={handleCreateNew} className="hover-scale">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Employee
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportExcel} variant="outline" className="hover-scale" disabled={employees.length === 0}>
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Export Excel
+            </Button>
+            <Button onClick={handleExportPDF} variant="outline" className="hover-scale" disabled={employees.length === 0}>
+              <Download className="mr-2 h-4 w-4" />
+              Export PDF
+            </Button>
+            <Button onClick={handleCreateNew} className="hover-scale">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Employee
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -289,6 +332,7 @@ const Dashboard = () => {
                 employees={filteredEmployees}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                searchTerm={searchTerm}
               />
             )}
           </TabsContent>
