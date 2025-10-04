@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3, Search, Download } from "lucide-react";
-import * as XLSX from "xlsx";
+import { Plus, LogOut, Users, TrendingUp, Calendar, Briefcase, BarChart3, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from "@supabase/supabase-js";
 import EmployeeList from "@/components/EmployeeList";
@@ -134,56 +133,6 @@ const Dashboard = () => {
     fetchEmployees();
   };
 
-  const handleDownloadExcel = () => {
-    try {
-      // Prepare data for Excel
-      const excelData = employees.map(emp => ({
-        Name: emp.name,
-        Email: emp.email,
-        Phone: emp.phone || "-",
-        Department: emp.department || "-",
-        Position: emp.position || "-",
-        Salary: emp.salary ? `₹${emp.salary.toLocaleString("en-IN")}` : "-",
-        "Hire Date": emp.hire_date ? new Date(emp.hire_date).toLocaleDateString() : "-",
-        "Created At": new Date(emp.created_at).toLocaleDateString(),
-      }));
-
-      // Create worksheet
-      const ws = XLSX.utils.json_to_sheet(excelData);
-      
-      // Set column widths
-      const colWidths = [
-        { wch: 20 }, // Name
-        { wch: 25 }, // Email
-        { wch: 15 }, // Phone
-        { wch: 15 }, // Department
-        { wch: 15 }, // Position
-        { wch: 15 }, // Salary
-        { wch: 12 }, // Hire Date
-        { wch: 12 }, // Created At
-      ];
-      ws["!cols"] = colWidths;
-
-      // Create workbook
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Employees");
-
-      // Save file
-      XLSX.writeFile(wb, `employee-list-${new Date().toISOString().split("T")[0]}.xlsx`);
-
-      toast({
-        title: "Success",
-        description: "Employee list downloaded successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to download employee list",
-        variant: "destructive",
-      });
-    }
-  };
-
   // Filter employees based on search term
   const filteredEmployees = employees.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -294,27 +243,21 @@ const Dashboard = () => {
 
           <TabsContent value="directory" className="mt-6">
             {employees.length > 0 && (
-              <div className="mb-6 flex justify-between items-center gap-4">
-                <div className="flex-1">
-                  <div className="relative max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search employees by name..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  {searchTerm && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Found {filteredEmployees.length} employee{filteredEmployees.length !== 1 ? "s" : ""}
-                    </p>
-                  )}
+              <div className="mb-6">
+                <div className="relative max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search employees by name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
-                <Button onClick={handleDownloadExcel} variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Excel
-                </Button>
+                {searchTerm && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Found {filteredEmployees.length} employee{filteredEmployees.length !== 1 ? "s" : ""}
+                  </p>
+                )}
               </div>
             )}
             {employees.length === 0 ? (
