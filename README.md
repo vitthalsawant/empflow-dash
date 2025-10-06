@@ -2,6 +2,8 @@
 
 A comprehensive full-stack CRUD application for managing employee data with modern UI, real-time analytics, and secure authentication. Built with React, TypeScript, and Supabase (via Lovable Cloud).
 
+https://empflow-dash.vercel.app/
+
 ## 🎯 Project Goal
 
 A straightforward CRUD (Create, Read, Update, Delete) application to manage a list of employees with enhanced features including visual analytics and secure user authentication.
